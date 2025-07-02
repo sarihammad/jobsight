@@ -21,19 +21,25 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        working-directory: ml-service
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+          python -m venv ml-service/venv
+          source ml-service/venv/bin/activate
+          pip install -r ml-service/requirements.txt
 
       - name: Start ML service
         run: |
-          cd ml-service
-          uvicorn main:app --host 0.0.0.0 --port 5001
+          ml-service/venv/bin/uvicorn ml-service.app.main:app --host 0.0.0.0 --port 5001 &
+
+          for i in {1..10}; do
+            if curl -s http://localhost:5001/docs > /dev/null; then
+              echo "ML service is up."
+              break
+            fi
+            echo "Waiting for ML service to start..."
+            sleep 2
+          done
 
       - name: Run tests
-        working-directory: ml-service
         run: |
-          source venv/bin/activate
-          pytest
+          source ml-service/venv/bin/activate
+          pytest ml-service
