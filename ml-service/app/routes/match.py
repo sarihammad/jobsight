@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from models.schemas import MatchPayload
-from services.matcher import match_resume_to_job
+from app.models.schemas import MatchPayload
+from app.services.matcher import match_resume_to_job
 
 router = APIRouter()
 
