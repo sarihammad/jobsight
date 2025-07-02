@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - 'backend/**'
+      - 'ml-service/**'
   pull_request:
     paths:
       - 'backend/**'
+      - 'ml-service/**'
 
 jobs:
   build:
