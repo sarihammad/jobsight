@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ../backend
+    ports:
+      - 8080:8080
+    env_file:
+      - ../backend/.env
+
+  frontend:
+    build: ../frontend
+    ports:
+      - 3000:3000
+
+  ml-service:
+    build: ../ml-service
+    portsk
+      - 5000:5000
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jobsight
+    ports:
+      - 5432:5432
