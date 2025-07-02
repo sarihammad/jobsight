@@ -1,0 +1,7 @@
+Flask
+flask-cors
+PyMuPDF
+spacy
+scikit-learn
+pytest
+httpx
