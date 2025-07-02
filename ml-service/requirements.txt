@@ -6,7 +6,7 @@ spacy
 PyMuPDF
 transformers
 python-multipart
-torch 
+torch
 torchvision 
 torchaudio
 uvicorn
