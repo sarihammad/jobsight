@@ -1,7 +1,7 @@
 import io
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+from main import app
 from reportlab.pdfgen import canvas
 from io import BytesIO
 

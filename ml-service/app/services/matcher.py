@@ -1,6 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from app.services.skills import extract_skills
+from services.skills import extract_skills
 import logging
 
 logger = logging.getLogger(__name__)

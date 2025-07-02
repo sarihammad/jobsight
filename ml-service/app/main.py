@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import resume, match
-from app.exceptions.handlers import general_exception_handler, validation_exception_handler, runtime_exception_handler
+from routes import resume, match
+from exceptions.handlers import general_exception_handler, validation_exception_handler, runtime_exception_handler
 from fastapi.exceptions import RequestValidationError
 
 app = FastAPI()
