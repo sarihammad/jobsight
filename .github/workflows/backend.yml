@@ -42,7 +42,7 @@ jobs:
           python -m venv ml-service/venv
           source ml-service/venv/bin/activate
           pip install -r ml-service/requirements.txt
-          ml-service/venv/bin/uvicorn ml-service.app.main:app --host 0.0.0.0 --port 5001 &
+          PYTHONPATH=ml-service ml-service/venv/bin/uvicorn ml-service.app.main:app --host 0.0.0.0 --port 5001 &
           until curl --output /dev/null --silent --head --fail http://localhost:5001/docs; do
             echo "Waiting for ML service to start..."
             sleep 2
