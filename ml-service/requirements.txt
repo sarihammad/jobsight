@@ -5,3 +5,7 @@ scikit-learn
 spacy
 PyMuPDF
 transformers
+python-multipart
+torch 
+torchvision 
+torchaudio
