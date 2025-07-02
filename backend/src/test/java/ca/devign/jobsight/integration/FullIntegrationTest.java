@@ -1,5 +1,6 @@
 package ca.devign.jobsight.integration;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,21 +60,35 @@ public class FullIntegrationTest {
                 .andReturn();
 
         String response = loginResult.getResponse().getContentAsString();
-        String token = response.replace("{\"token\":\"", "").replace("\"}", "");
+        JsonNode node = objectMapper.readTree(response);
+        String token = node.get("token").asText();
 
         //Upload resume with token
-        MockMultipartFile file = new MockMultipartFile("file", "resume.pdf", "application/pdf", "PDF content".getBytes());
+        // MockMultipartFile file = new MockMultipartFile("file", "resume.pdf", "application/pdf", "PDF content".getBytes());
+        MockMultipartFile file = new MockMultipartFile(
+            "file",
+            "resume.pdf",
+            "application/pdf",
+            getClass().getResourceAsStream("/resume-samples/sample_resume.pdf")
+        );
 
         mockMvc.perform(multipart("/api/resumes/upload")
                 .file(file)
+                .param("jd", "We are hiring for AWS, Python, and Kubernetes expertise.")
                 .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Resume uploaded successfully."));
-    }
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.score").isNumber())
+            .andExpect(jsonPath("$.missingSkills").isArray());
+        }
 
     @Test
-    void shouldRejectResumeUploadWithoutAuth() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "resume.pdf", "application/pdf", "PDF content".getBytes());
+    void shouldRejectResumeUploadWithoutAuth() throws Exception {   
+        MockMultipartFile file = new MockMultipartFile(
+            "file",
+            "resume.pdf",
+            "application/pdf",
+            getClass().getResourceAsStream("/resume-samples/sample_resume.pdf")
+        );
 
         mockMvc.perform(multipart("/api/resumes/upload").file(file))
                 .andExpect(status().isUnauthorized());

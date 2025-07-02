@@ -1,0 +1,45 @@
+name: ML Service CI
+
+on:
+  push:
+    paths:
+      - 'ml-service/**'
+  pull_request:
+    paths:
+      - 'ml-service/**'
+
+jobs:
+  test-ml:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m venv ml-service/venv
+          source ml-service/venv/bin/activate
+          pip install -r ml-service/requirements.txt
+
+      - name: Start ML service
+        run: |
+          PYTHONPATH=ml-service ml-service/venv/bin/uvicorn ml-service.app.main:app --host 0.0.0.0 --port 5001 &
+
+          for i in {1..10}; do
+            if curl -s http://localhost:5001/docs > /dev/null; then
+              echo "ML service is up."
+              break
+            fi
+            echo "Waiting for ML service to start..."
+            sleep 2
+          done
+
+      - name: Run tests
+        run: |
+          source ml-service/venv/bin/activate
+          PYTHONPATH=ml-service pytest ml-service

@@ -1,6 +1,7 @@
 package ca.devign.jobsight.controller;
 
 import ca.devign.jobsight.dto.ResumeResponse;
+import ca.devign.jobsight.ml.dto.MatchResult;
 import ca.devign.jobsight.model.User;
 import ca.devign.jobsight.model.Resume;
 import ca.devign.jobsight.service.ResumeService;
@@ -23,10 +24,13 @@ public class ResumeController {
     private final UserService userService;
 
     @PostMapping("/upload")
-    public String uploadResume(@RequestParam MultipartFile file, Principal principal) throws Exception {
+    public MatchResult uploadResume(
+        @RequestParam MultipartFile file,
+        @RequestParam String jd,
+        Principal principal
+    ) throws Exception {
         User user = userService.getFullUserByEmail(principal.getName());
-        resumeService.uploadResume(file, user);
-        return "Resume uploaded successfully.";
+        return resumeService.uploadResumeAndMatch(file, user, jd);
     }
 
     @GetMapping

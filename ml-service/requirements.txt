@@ -1,0 +1,13 @@
+fastapi
+httpx
+pytest
+scikit-learn
+spacy
+PyMuPDF
+transformers
+python-multipart
+torch
+torchvision 
+torchaudio
+uvicorn
+reportlab

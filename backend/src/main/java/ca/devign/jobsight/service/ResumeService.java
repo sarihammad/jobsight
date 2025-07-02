@@ -1,5 +1,7 @@
 package ca.devign.jobsight.service;
 
+import ca.devign.jobsight.ml.client.PythonMlClient;
+import ca.devign.jobsight.ml.dto.MatchResult;
 import ca.devign.jobsight.model.Resume;
 import ca.devign.jobsight.model.User;
 import ca.devign.jobsight.repository.ResumeRepository;
@@ -9,23 +11,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ResumeService {
 
     private final ResumeRepository resumeRepository;
+    private final PythonMlClient mlClient;
 
     private static final String UPLOAD_DIR = "uploads";
 
-    public void uploadResume(MultipartFile file, User user) throws IOException {
+    public MatchResult uploadResumeAndMatch(MultipartFile file, User user, String jobDescription) throws IOException {
         validateFileType(file.getOriginalFilename());
 
-        Path dir = Paths.get(UPLOAD_DIR);
-        Files.createDirectories(dir);
-
-        Path path = dir.resolve(UUID.randomUUID() + "_" + file.getOriginalFilename());
+        Files.createDirectories(Paths.get(UPLOAD_DIR));
+        Path path = Paths.get(UPLOAD_DIR, UUID.randomUUID() + "_" + file.getOriginalFilename());
         Files.write(path, file.getBytes());
 
         Resume resume = new Resume();
@@ -33,6 +35,9 @@ public class ResumeService {
         resume.setFilePath(path.toString());
         resume.setUser(user);
         resumeRepository.save(resume);
+
+        String resumeText = mlClient.extractText(file.getBytes(), file.getOriginalFilename());
+        return mlClient.match(resumeText, jobDescription);
     }
 
     public List<Resume> getUserResumes(User user) {
