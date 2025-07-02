@@ -27,6 +27,11 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
 
+      - name: Start ML service
+        run: |
+          cd ml-service
+          uvicorn main:app --host 0.0.0.0 --port 5001
+
       - name: Run tests
         working-directory: ml-service
         run: |
